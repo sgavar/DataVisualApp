@@ -1,0 +1,233 @@
+﻿@{
+    Layout = "~/views/shared/_Layout.cshtml";
+    ViewData["Title"] = "BSR-Survey Dashboard";
+
+    @using System.Security.Claims
+    @using DataVisualApp.Extensions
+}
+@if (User.IsSignedIn() && User.IsInAnyRoles("Admin", "Elevated", "Livanta", "Kepro", "Member"))
+{
+    <div id="app" style="display:none;" ng-app="SurveyApp" ng-controller="surveyController">
+        <div class="container" ng-cloak>
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h4><span class="glyphicon glyphicon-time"></span> Survey Period</h4>
+                            <div class="btn-group" role="group" aria-label="..." data-toggle="buttons">
+                                <label class="btn btn-default active" ng-click="setResult('lastMonth')">
+                                    <input type="radio" name="options" id="lastMonthBtn" autocomplete="off" />Last Month
+                                </label>
+                                <label class="btn btn-default" ng-click="setResult('lastQuarter')">
+                                    <input type="radio" name="options" id="lastQuarterBtn" autocomplete="off" />Last Quarter
+                                </label>
+                                <label class="btn btn-default" ng-click="setResult('allTime')">
+                                    <input type="radio" name="options" id="lastYearBtn" autocomplete="off" />Contract YTD
+                                </label>
+                                <label class="btn btn-default" ng-click="showTrendSection('cumulative')">
+                                    <input type="radio" name="options" id="cumulativeBtn" autocomplete="off" />Cumulative
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" ng-hide="showTrend">
+                        <div class="col-lg-12">
+                            <h4><span class="glyphicon glyphicon-map-marker"></span> Survey Region</h4>
+                            <div class="btn-group" role="group" aria-label="..." data-toggle="buttons">
+                                <label class="btn btn-default active" ng-click="setRegion('rall')">
+                                    <input type="radio" name="options" id="region-all-btn" autocomplete="off" />All Areas
+                                </label>
+                                <label class="btn btn-default" ng-click="setRegion('r1')">
+                                    <input type="radio" name="options" id="region-1-btn" autocomplete="off" />Area 1
+                                </label>
+                                <label class="btn btn-default" ng-click="setRegion('r2')">
+                                    <input type="radio" name="options" id="region-2-btn" autocomplete="off" />Area 2
+                                </label>
+                                <label class="btn btn-default" ng-click="setRegion('r3')">
+                                    <input type="radio" name="options" id="region-3-btn" autocomplete="off" />Area 3
+                                </label>
+                                <label class="btn btn-default" ng-click="setRegion('r4')">
+                                    <input type="radio" name="options" id="region-4-btn" autocomplete="off" />Area 4
+                                </label>
+                                <label class="btn btn-default" ng-click="setRegion('r5')">
+                                    <input type="radio" name="options" id="region-5-btn" autocomplete="off" />Area 5
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @if (User.IsInAnyRoles("Admin", "Elevated", "Livanta", "Kepro"))
+                {
+                    <div class="col-lg-6 col-md-6">
+                        <h4>
+                            <span class="glyphicon glyphicon-save" aria-hidden="true"></span> Download Survey Data:
+                        </h4>
+                        @if (User.IsInAnyRoles("Admin", "Elevated", "Livanta"))
+                        {
+                            <label>Livanta:</label>
+                            <a class="btn btn-link" role="button" asp-controller="Home" asp-action="DownloadLivanta1Data">Area 1 Data</a>
+                            <a class="btn btn-link" role="button" asp-controller="Home" asp-action="DownloadLivanta5Data">Area 5 Data</a>
+                        }
+                        @if (User.IsInAnyRoles("Admin", "Elevated", "Kepro"))
+                        {
+                            <br/>
+                            <label>Kepro:</label>
+                            <a class="btn btn-link" role="button" asp-controller="Home" asp-action="DownloadKepro2Data">Area 2 Data</a>
+                            <a class="btn btn-link" role="button" asp-controller="Home" asp-action="DownloadKepro3Data">Area 3 Data</a>
+                            <a class="btn btn-link" role="button" asp-controller="Home" asp-action="DownloadKepro4Data">Area 4 Data</a>
+                        }
+                        <br/>
+                        <a class="btn btn-link" style="padding-left:0;" role="button" asp-controller="Home" asp-action="DownloadDataDic">Data Dictionary</a>
+                        <a class="btn btn-link" role="button" asp-controller="Home" asp-action="DownloadScoring">Scoring Methodology</a>
+                        @if (User.IsInAnyRoles("Admin", "Elevated"))
+                        {
+                            <a class="btn btn-link" asp-controller="Home" asp-action="DownloadAllData">All Data</a>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="row container survey-detail" ng-show="loading">
+            <div class="col-lg-6 col-md-6 col-sm-6">
+                <div class="loading">
+                    <span></span>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-6">
+                <div class="loading">
+                    <span></span>
+                </div>
+            </div>
+        </div>
+        <!--Survey Trends Section-->
+        <div class="container row" id="trendSection" ng-show="showTrend" ng-cloak>
+            <div ng-hide="loading">
+                <div class="col-lg-6 col-md-8 col-sm-12">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading"><h4><strong>Survey Results for Appeals</strong></h4></div>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <h4>Overall QIO Composite Score Trend By QIO</h4>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <d3-line data="trendData" stype="'all'" section="'appeals'" class="col-xs-12" />
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <h4>Overall QIO Composite Score Trend By Region</h4>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <d3-line data="trendData" section="'appeals'" stype="'region'" class="col-xs-12" />
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-8 col-sm-12">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading"><h4><strong>Survey Results for Complaints</strong></h4></div>
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <h4>Overall QIO Composite Score Trend By QIO</h4>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <d3-line data="trendData" section="'complaints'" stype="'all'" class="col-xs-12" />
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <h4>Overall QIO Composite Score Trend By Region</h4>
+                                    </div>
+                                    <div class="col-xs-12">
+                                        <d3-line data="trendData" stype="'region'" section="'complaints'" class="col-xs-12" />
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--Survey Trends Section End-->
+        <!--Survey Results Section-->
+        <div id="survey-results" ng-hide="showTrend">
+            <!--Loading-->
+            <div ng-hide="loading">
+                <!--Region All-->
+                <div class="container row survey-detail" id="detailSection" ng-show="showRegionAll" ng-cloak>
+                    <div id="result-appeals-all" class="col-lg-6 col-md-8 col-sm-12">
+                        <region-all result="choosenResult.appeals.RegionAll" startdate="choosenResult.startDate" enddate="choosenResult.endDate" regionname="'Appeals (All Areas)'" regionid="all" show-this-detail="showDetail"></region-all>
+                    </div>
+                    <!--Result appeals Section End-->
+                    <div id="result-complaints-all" class="col-lg-6 col-md-8 col-sm-12">
+                        <region-all result="choosenResult.complaints.RegionAll" startdate="choosenResult.startDate" enddate="choosenResult.endDate" regionname="'Complaints (All Areas)'" regionid="all" show-this-detail="showDetail"></region-all>
+                    </div>
+                    <!--Result complaints Section End-->
+                </div>
+                <!--Region 1-->
+                <div class="container row survey-detail" id="detailSectionRegion1" ng-show="showRegion1" ng-cloak>
+                    <div id="result-appeals-region1" class="col-lg-6 col-md-6 col-sm-6">
+                        <region-li result="choosenResult.appeals.Region1" startdate="choosenResult.startDate" enddate="choosenResult.endDate" regionname="'Appeals (Area 1)'" regionid="r1" show-this-detail="showDetail"></region-li>
+                    </div>
+                    <div id="result-complaints-region1" class="col-lg-6 col-md-6 col-sm-6">
+                        <region-li result="choosenResult.complaints.Region1" startdate="choosenResult.startDate" enddate="choosenResult.endDate" regionname="'Complaints (Area 1)'" regionid="r1" show-this-detail="showDetail"></region-li>
+                    </div>
+                </div>
+                <!--Region 2-->
+                <div class="container row survey-detail" id="detailSectionRegion2" ng-show="showRegion2" ng-cloak>
+                    <div id="result-appeals-region2" class="col-lg-6 col-md-6 col-sm-6">
+                        <region-ke result="choosenResult.appeals.Region2" startdate="choosenResult.startDate" enddate="choosenResult.endDate" regionname="'Appeals (Area 2)'" regionid="r2" show-this-detail="showDetail"></region-ke>
+                    </div>
+                    <div id="result-complaints-region2" class="col-lg-6 col-md-6 col-sm-6">
+                        <region-ke result="choosenResult.complaints.Region2" startdate="choosenResult.startDate" enddate="choosenResult.endDate" regionname="'Complaints (Area 2)'" regionid="r2" show-this-detail="showDetail"></region-ke>
+                    </div>
+                </div>
+                <!--Region 3-->
+                <div class="container row survey-detail" id="detailSectionRegion3" ng-show="showRegion3" ng-cloak>
+                    <div id="result-appeals-region3" class="col-lg-6 col-md-6 col-sm-6">
+                        <region-ke result="choosenResult.appeals.Region3" startdate="choosenResult.startDate" enddate="choosenResult.endDate" regionname="'Appeals (Area 3)'" regionid="r3" show-this-detail="showDetail"></region-ke>
+                    </div>
+                    <div id="result-complaints-region3" class="col-lg-6 col-md-6 col-sm-6">
+                        <region-ke result="choosenResult.complaints.Region3" startdate="choosenResult.startDate" enddate="choosenResult.endDate" regionname="'Complaints (Area 3)'" regionid="r3" show-this-detail="showDetail"></region-ke>
+                    </div>
+                </div>
+                <!--Region 4-->
+                <div class="container row survey-detail" id="detailSectionRegion4" ng-show="showRegion4" ng-cloak>
+                    <div id="result-appeals-region4" class="col-lg-6 col-md-6 col-sm-6">
+                        <region-ke result="choosenResult.appeals.Region4" startdate="choosenResult.startDate" enddate="choosenResult.endDate" regionname="'Appeals (Area 4)'" regionid="r4" show-this-detail="showDetail"></region-ke>
+                    </div>
+                    <div id="result-complaints-region4" class="col-lg-6 col-md-6 col-sm-6">
+                        <region-ke result="choosenResult.complaints.Region4" startdate="choosenResult.startDate" enddate="choosenResult.endDate" regionname="'Complaints (Area 4)'" regionid="r4" show-this-detail="showDetail"></region-ke>
+                    </div>
+                </div>
+                <!--Region 5-->
+                <div class="container row survey-detail" id="detailSectionRegion5" ng-show="showRegion5" ng-cloak>
+                    <div id="result-appeals-region5" class="col-lg-6 col-md-6 col-sm-6">
+                        <region-li result="choosenResult.appeals.Region5" startdate="choosenResult.startDate" enddate="choosenResult.endDate" regionname="'Appeals (Area 5)'" regionid="r5" show-this-detail="showDetail"></region-li>
+                    </div>
+                    <div id="result-complaints-region5" class="col-lg-6 col-md-6 col-sm-6">
+                        <region-li result="choosenResult.complaints.Region5" startdate="choosenResult.startDate" enddate="choosenResult.endDate" regionname="'Complaints (Area 5)'" regionid="r5" show-this-detail="showDetail"></region-li>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else if (User.IsSignedIn() && User.IsInRole("Inactive"))
+{
+    <div class="container">
+        <p>Thank you for visiting BFCC / QIO Beneficiary Survey Reporting Dashboard!</p>
+        <p>Your account is not active.</p>
+        <p>For questions, please contact support team.</p>
+    </div>
+}

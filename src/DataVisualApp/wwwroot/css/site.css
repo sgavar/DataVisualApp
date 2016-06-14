@@ -1,0 +1,174 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    min-width:590px;
+}
+
+/* Wrapping element */
+/* Set some basic padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Set widths on the form inputs since otherwise they're 100% wide */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+/* Carousel */
+.carousel-caption {
+    z-index: 10 !important;
+}
+
+    .carousel-caption p {
+        font-size: 20px;
+        line-height: 1.4;
+    }
+
+@media (min-width: 768px) {
+    .carousel-caption {
+        z-index: 10 !important;
+    }
+}
+
+/*D3 style code*/
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.x.axis path {
+    /*display: none;*/
+}
+
+.line {
+    fill: none;
+    stroke: #337AB7;
+    stroke-width: 1.5px;
+}
+
+.legend rect {
+    fill: white;
+    stroke: black;
+    opacity: 0.8;
+}
+
+/* Hide trendSection by default
+#trendSection{
+    display:none;
+}*/
+
+/*D3 tool tip */
+
+.d3-tip {
+    line-height: 1;
+    font-weight: bold;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 2px;
+}
+
+    /* Creates a small triangle extender for the tooltip */
+    .d3-tip:after {
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        display: inline;
+        font-size: 18px;
+        width: 100%;
+        line-height: 1;
+        color: rgba(0, 0, 0, 0.8);
+        content: "\25BC";
+        position: absolute;
+        text-align: center;
+    }
+
+    /* Style northward tooltips differently */
+    .d3-tip.n:after {
+        margin: -4px 0 0 0;
+        top: 100%;
+        left: 0;
+    }
+
+#trendSection, .survey-detail {
+    margin-top: 20px;
+}
+
+/*Loading animations*/
+.loading {
+    width: 150px;
+    height: 4px;
+    border-radius: 2px;
+    margin: 0 auto;
+    margin-top: 100px;
+    position: relative;
+    background: lightgreen;
+    -webkit-animation: changeBgColor 1.04s ease-in infinite alternate;
+    -moz-animation: changeBgColor 1.04s ease-in infinite alternate;
+    -o-animation: changeBgColor 1.04s ease-in infinite alternate;
+    animation: changeBgColor 1.04s ease-in infinite alternate;
+}
+
+.loading span {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: lightgreen;
+    position: absolute;
+    margin-top: -7px;
+    margin-left: -8px;
+    -webkit-animation: changePosition 1.04s ease-in infinite alternate;
+    -moz-animation: changePosition 1.04s ease-in infinite alternate;
+    -o-animation: changePosition 1.04s ease-in infinite alternate;
+    animation: changePosition 1.04s ease-in infinite alternate;
+}
+
+@-webkit-keyframes changeBgColor {
+    0% {
+        background: lightgreen;
+    }
+
+    100% {
+        background: lightblue;
+    }
+}
+
+@-webkit-keyframes changePosition {
+    0% {
+        background: lightgreen;
+    }
+
+    100% {
+        margin-left: 142px;
+        background: lightblue;
+    }
+}
+
+@-moz-keyframes changePosition {
+    0% {
+        background: lightgreen;
+    }
+
+    100% {
+        margin-left: 142px;
+        background: lightblue;
+    }
+}
+
+@keyframes changePosition {
+    0% {
+        background: lightgreen;
+    }
+
+    100% {
+        margin-left: 142px;
+        background: lightblue;
+    }
+}

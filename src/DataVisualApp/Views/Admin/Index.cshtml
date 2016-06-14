@@ -1,0 +1,14 @@
+﻿@model DataVisualApp.ViewModels.Admin.AdminUserViewModel
+@{ 
+    ViewBag.Title = "Account Control Panel";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container">
+    <p class="text-success">@ViewBag.StatusMessage</p>
+    <p class="text-warning">@ViewBag.ErrorMessage</p>
+
+    <div class="userview">
+        @await Html.PartialAsync("ShowUserDetails")
+    </div>
+</div>
+

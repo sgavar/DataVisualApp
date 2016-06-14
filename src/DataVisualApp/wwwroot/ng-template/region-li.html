@@ -1,0 +1,250 @@
+﻿<div class="panel panel-primary">
+    <div class="panel-heading"><h4><strong>Survey Results for {{regionname}}</strong></h4></div>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <!--Date Section-->
+            <div class="row">
+                <div class="col-xs-12">
+                    <strong style="font-size:medium;">Survey Date: </strong><b>{{startdate | date:'MM/dd/yyyy'}}</b> - <b>{{enddate | date:'MM/dd/yyyy'}}</b>
+                </div>
+            </div>
+            <!--Overall Chart-->
+            <div class="row">
+                <div class="col-xs-12">
+                    <h4>Overall QIO Composite Score</h4>
+                </div>
+                <div class="col-md-6">
+                    <h5 style="text-align:center;">Livanta (N={{result.Count}})</h5>
+                    <div ng-if="result.Count<30" class="col-xs-12" style="height:130px;margin-bottom:5px;">
+                        <p class="text-center">Insufficient number of cases to report results</p>
+                    </div>
+                    <d3-circle ng-if="result.Count>=30" height="130" surveyType="Li" result="{{result.OverallComp}}" class="col-xs-12" />
+                </div>
+            </div>
+            <br />
+            <!--Composite score table-->
+            <div class="row">
+                <div class="col-xs-12">
+                    <h4>Composite Scores</h4>
+                </div>
+                <table class="table table-condensed col-lg-12 col-md-12">
+                    <thead>
+                        <tr>
+                            <th class="col-lg-4 col-md-4" style="border-bottom:none;"></th>
+                            <th class="col-lg-8 col-md-8" style="border-bottom:none;">Livanta (N={{result.Count}})</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-lg-4 col-md-4" style="text-align:right;border-top:none;"><a href="javascript:void(0);" ng-click="$parent.showDetail('Communication', regionid)">Communication</a>:</td>
+                            <td class="col-lg-8 col-md-8" style="border-top:none;">
+                                <div class="progress" ng-if="result.Count<30"><span>&nbsp;</span></div>
+                                <div class="progress" ng-if="result.Count>=30">
+                                    <div class="progress-bar" role="progressbar" aria-valuenow="{{result.CommunicationComp * 100 | number:0}}" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': (result.CommunicationComp * 100 | number:0) + '%'};">
+                                        {{result.CommunicationComp * 100 | number:0}}%
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-lg-4 col-md-4" style="text-align:right;border-top:none;"><a href="javascript:void(0);" ng-click="$parent.showDetail('Courtesy', regionid)">Courtesy & Respect</a>:</td>
+                            <td class="col-lg-8 col-md-8" style="border-top:none;">
+                                <div class="progress" ng-if="result.Count<30"><span>&nbsp;</span></div>
+                                <div class="progress" ng-if="result.Count>=30">
+                                    <span class="progress-bar" aria-valuenow="{{result.CourtesyComp * 100 | number:0}}" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': (result.CourtesyComp * 100 | number:0) + '%'};">
+                                        {{result.CourtesyComp * 100 | number:0}}%
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-lg-4 col-md-4" style="text-align:right;border-top:none;">
+                                <a href="javascript:void(0);" ng-click="$parent.showDetail('Responsiveness',regionid)">Responsiveness</a>:
+                            </td>
+                            <td class="col-lg-8 col-md-8" style="border-top:none;">
+                                <div class="progress" ng-if="result.Count<30"><span>&nbsp;</span></div>
+                                <div class="progress" ng-if="result.Count>=30">
+                                    <span class="progress-bar" aria-valuenow="{{result.ResponsivenessComp * 100 | number:0}}" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': (result.ResponsivenessComp * 100 | number:0) + '%'};">
+                                        {{result.ResponsivenessComp * 100 | number:0}}%
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Detail composite score start-->
+            <!--Communication-->
+            <div class="row well" ng-show="$parent.showDetailCommunication.{{regionid}}">
+                <div class="col-xs-12">
+                    <h4>Communication Composite Score <button class="btn btn-default btn-xs pull-right" ng-click="$parent.showDetail('Communication', regionid)" style="color:#337ab7;background-color:#f5f5f5" data-toggle="tooltip" data-placement="top" title="Close this"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></h4>
+                    <p>How satisfied were you that the QIO representative...</p>
+                    <table class="table table-condensed table-responsive col-lg-12 col-md-12">
+                        <thead>
+                            <tr>
+                                <th class="col-lg-4 col-md-4" style="border-bottom:none;"></th>
+                                <th class="col-lg-8 col-md-8" style="border-bottom:none;">Livanta (N={{result.Count}})</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="col-lg-4 col-md-4" style="text-align:left;border-top:none;">
+                                    <small>Q7: Explained things in a way you could understand?</small>
+                                </td>
+                                <td class="col-lg-8 col-md-8" style="border-top:none;vertical-align:middle;">
+                                    <div class="progress" style="margin-bottom:0;" ng-if="result.Count<30"><span>&nbsp;</span></div>
+                                    <survey-detail-score-li ng-if="result.Count>=30" satisfy="{{result.q7Satisfy}}" verysatisfy="{{result.q7VerySatisfy}}"></survey-detail-score-li>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-lg-4 col-md-4" style="text-align:left;border-top:none;">
+                                    <small>Q8: Spent enough time with you?</small>
+                                </td>
+                                <td class="col-lg-8 col-md-8" style="border-top:none;vertical-align:middle;">
+                                    <div class="progress" style="margin-bottom:0;" ng-if="result.Count<30"><span>&nbsp;</span></div>
+                                    <survey-detail-score-li ng-if="result.Count>=30" satisfy="{{result.q8Satisfy}}" verysatisfy="{{result.q8VerySatisfy}}"></survey-detail-score-li>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-lg-4 col-md-4" style="text-align:left;border-top:none;">
+                                    <small>Q9: Listened carefully to you?</small>
+                                </td>
+                                <td class="col-lg-8 col-md-8" style="border-top:none;vertical-align:middle;">
+                                    <div class="progress" style="margin-bottom:0;" ng-if="result.Count<30"><span>&nbsp;</span></div>
+                                    <survey-detail-score-li ng-if="result.Count>=30" satisfy="{{result.q9Satisfy}}" verysatisfy="{{result.q9VerySatisfy}}"></survey-detail-score-li>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td style="text-align:center;">
+                                    <svg width="120" height="50">
+                                        <rect width="15" height="15" x="10" y="5" style="fill:rgb(44, 91, 131);stroke-width:0" />
+                                        <rect width="15" height="15" x="10" y="25" style="fill:rgb(51, 122, 183);stroke-width:0" />
+                                        <text x="33" y="16" fill="black" font-size="12px">Very Satisfied</text>
+                                        <text x="33" y="37" fill="black" font-size="12px">Satisfied</text>
+                                    </svg>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <!--Communication End-->
+            <!--Courtesy-->
+            <div class="row well" ng-show="$parent.showDetailCourtesy.{{regionid}}">
+                <div class="col-xs-12">
+                    <h4>Courtesy & Respect Composite Score <button class="btn btn-default btn-xs pull-right" ng-click="$parent.showDetail('Courtesy',regionid)" style="color:#337ab7;background-color:#f5f5f5" data-toggle="tooltip" data-placement="top" title="Close this"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></h4>
+                    <p>How satisfied were you that the QIO representative...</p>
+                    <table class="table table-condensed table-responsive col-lg-12 col-md-12">
+                        <thead>
+                            <tr>
+                                <th class="col-lg-4 col-md-4" style="border-bottom:none;"></th>
+                                <th class="col-lg-8 col-md-8" style="border-bottom:none;">Livanta (N={{result.Count}})</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="col-lg-4 col-md-4" style="text-align:left;border-top:none;">
+                                    <small>Q6: Was as helpful as you thought he or she should be?</small>
+                                </td>
+                                <td class="col-lg-8 col-md-8" style="border-top:none;vertical-align:middle;">
+                                    <div class="progress" style="margin-bottom:0;" ng-if="result.Count<30"><span>&nbsp;</span></div>
+                                    <survey-detail-score-li ng-if="result.Count>=30" satisfy="{{result.q6Satisfy}}" verysatisfy="{{result.q6VerySatisfy}}"></survey-detail-score-li>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-lg-4 col-md-4" style="text-align:left;border-top:none;">
+                                    <small>Q10: Showed respect for what you said?</small>
+                                </td>
+                                <td class="col-lg-8 col-md-8" style="border-top:none;vertical-align:middle;">
+                                    <div class="progress" style="margin-bottom:0;" ng-if="result.Count<30"><span>&nbsp;</span></div>
+                                    <survey-detail-score-li ng-if="result.Count>=30" satisfy="{{result.q10Satisfy}}" verysatisfy="{{result.q10VerySatisfy}}"></survey-detail-score-li>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td style="text-align:center;">
+                                    <svg width="120" height="50">
+                                        <rect width="15" height="15" x="10" y="5" style="fill:rgb(44, 91, 131);stroke-width:0" />
+                                        <rect width="15" height="15" x="10" y="25" style="fill:rgb(51, 122, 183);stroke-width:0" />
+                                        <text x="33" y="16" fill="black" font-size="12px">Very Satisfied</text>
+                                        <text x="33" y="37" fill="black" font-size="12px">Satisfied</text>
+                                    </svg>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <!--Courtesy End-->
+            <!--Responsiveness-->
+            <div class="row well" ng-show="$parent.showDetailResponsiveness.{{regionid}}">
+                <div class="col-xs-12">
+                    <h4>Responsiveness Composite Score <button class="btn btn-default btn-xs pull-right" ng-click="$parent.showDetail('Responsiveness',regionid)" style="color:#337ab7;background-color:#f5f5f5" data-toggle="tooltip" data-placement="top" title="Close this"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></h4>
+                    <p>The QIO respresentative...</p>
+                    <table class="table table-condensed table-responsive col-lg-12 col-md-12">
+                        <thead>
+                            <tr>
+                                <th class="col-lg-4 col-md-4" style="border-bottom:none;"></th>
+                                <th class="col-lg-8 col-md-8" style="border-bottom:none;">Livanta (N={{result.Count}})</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="col-lg-4 col-md-4" style="text-align:left;border-top:none;">
+                                    <small>Q11: Was as responsive to your quality of care compliant as you thought he or she should be?</small>
+                                </td>
+                                <td class="col-lg-8 col-md-8" style="border-top:none;vertical-align:middle;">
+                                    <div class="progress" style="margin-bottom:0;" ng-if="result.Count<30"><span>&nbsp;</span></div>
+                                    <survey-detail-score-li ng-if="result.Count>=30" satisfy="{{result.q11Satisfy}}" verysatisfy="{{result.q11VerySatisfy}}"></survey-detail-score-li>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="col-lg-4 col-md-4" style="text-align:left;border-top:none;">
+                                    <small>Q12: Understood the situation related to your quality of care compliant?</small>
+                                </td>
+                                <td class="col-lg-8 col-md-8" style="border-top:none;vertical-align:middle;">
+                                    <div class="progress" style="margin-bottom:0;" ng-if="result.Count<30"><span>&nbsp;</span></div>
+                                    <survey-detail-score-li ng-if="result.Count>=30" satisfy="{{result.q12Satisfy}}" verysatisfy="{{result.q12VerySatisfy}}"></survey-detail-score-li>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td></td>
+                                <td style="text-align:center;">
+                                    <svg width="120" height="50">
+                                        <rect width="15" height="15" x="10" y="5" style="fill:rgb(44, 91, 131);stroke-width:0" />
+                                        <rect width="15" height="15" x="10" y="25" style="fill:rgb(51, 122, 183);stroke-width:0" />
+                                        <text x="33" y="16" fill="black" font-size="12px">Strongly Agree</text>
+                                        <text x="33" y="37" fill="black" font-size="12px">Agree</text>
+                                    </svg>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <!--Responsiveness End-->
+            <!--Detail composite score end-->
+            <div class="row">
+                <div class="col-xs-12">
+                    <h4>Overall Rating of Process (0-10)</h4>
+                    <p>
+                        <div class="col-lg-2 col-md-2">Livanta:</div>
+                        <div class="progress col-lg-10 col-md-10" style="padding-left:0;padding-right:0;">
+                            <span ng-if="result.Count<30"></span>
+                            <div ng-if="result.Count>=30" class="progress-bar" role="progressbar" aria-valuenow="{{result.ProcessRating * 10}}" aria-valuemin="0" aria-valuemax="100" ng-style="{'width': (result.ProcessRating *10) + '%'};">
+                                {{result.ProcessRating | number:1}}
+                            </div>
+                        </div>
+                    </p>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>

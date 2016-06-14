@@ -1,0 +1,38 @@
+﻿@model DataVisualApp.ViewModels.Admin.AdminUserViewModel
+@using DataVisualApp.Controllers
+@using System.Globalization
+
+<table class="table table-striped table-responsive" id="user-details">
+    @{
+        var totalUsers = AdminController.usrList.ToList().Count();
+        int num = 0;
+    }
+    <tr>
+        <td colspan="5">Total Users: @totalUsers</td>
+    </tr>
+    <tr>
+        <th class="tblnum"></th>
+        <th>Username</th>
+        <th>Group</th>
+        <th>Email Confirmed</th>
+        <th>Edit</th>
+    </tr>
+    @foreach (var usr in AdminController.usrList)
+    {
+        ViewBag.UserName = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(usr.UserName);
+        num++;
+        <tr>
+            <td class="tblnum">@num</td>
+            <td title="@ViewBag.UserName">@ViewBag.UserName</td>
+            <td>@usr.GroupName</td>
+            <td>@usr.EmailConfirmed</td>
+            <td>
+                <form asp-controller="Admin" asp-action="EditUser" method="post" class="form-horizontal" role="form">
+                    <input type="hidden" name="id" value="@usr.UserId" />
+                    <input type="submit" class="btn-default btn" value="->" />
+                </form>
+            </td>
+        </tr>
+
+    }
+</table>
